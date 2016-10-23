@@ -1,0 +1,47 @@
+---
+name: timer
+director_uuid: fb70f16a-4d6f-41f8-bc2e-0181a03dff18
+
+releases:
+- name: timer
+  version: latest
+
+networks:
+- name: default
+  subnets:
+  - range: 10.244.0.0/28
+    reserved: [10.244.0.1]
+    static: [10.244.0.2,10.244.0.6,10.244.0.10,10.244.0.12]
+    cloud_properties:
+      name: random
+
+resource_pools:
+- name: default
+  stemcell:
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    version: latest
+  network: default
+  cloud_properties: {}
+
+compilation:
+  workers: 2
+  network: default
+  cloud_properties: {}
+
+update:
+  canaries: 1
+  canary_watch_time: 6000
+  update_watch_time: 6000
+  max_in_flight: 2
+
+jobs:
+- name: timer
+  templates:
+  - name: timer
+  instances: 1
+  resource_pool: default
+  networks:
+  - name: default
+    static_ips:
+    - 10.244.0.12
+  properties: {}
